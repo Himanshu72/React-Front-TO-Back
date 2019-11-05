@@ -24,7 +24,7 @@ class EditContact extends Component {
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-  onSubmit = (dispatch, e) => {
+  onSubmit = async (dispatch, e) => {
     e.preventDefault();
 
     const { name, email, phone } = this.state;
@@ -44,6 +44,13 @@ class EditContact extends Component {
       return;
     }
 
+    const id = this.props.match.params.id;
+    const encodeID = Buffer.from(id).toString("base64");
+    const res = await axios.put(
+      `http://localhost:8000/modify/contact/ ${encodeID}`,
+      { id: encodeID, name: name, email: email, ph: phone }
+    );
+    dispatch({ type: "UPDATE_CONTACT", payload: res.data });
     //clear state
     this.setState({ name: "", email: "", phone: "", errors: {} });
     this.props.history.push("/");

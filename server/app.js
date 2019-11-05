@@ -28,8 +28,8 @@ app.use(function(req, res, next) {
 });
 
 let contacts = [
-  new Contact(1, "Himanshu Joshi", "hjoshi115@gmail.com", "79898985828"),
-  new Contact(2, "Dhiraj Joshi", "hjoshi", "1234556")
+  new Contact("1", "Himanshu Joshi", "hjoshi115@gmail.com", "79898985828"),
+  new Contact("2", "Dhiraj Joshi", "hjoshi", "1234556")
 ];
 app.get("/get/contacts", (req, res) => res.json(contacts));
 app.get("/get/contact/:id", (req, res) => {
@@ -65,14 +65,16 @@ app.delete("/delete/contact/:id", (req, res) => {
 });
 
 app.put("/modify/contact/:id", (req, res) => {
+  const id = Buffer.from(req.params.id, "base64").toString("ascii");
+  console.log(req.body);
   let newContact = {
-    id: req.params.id,
+    id: id,
     name: req.body.name,
-    emaill: req.body.email,
-    phone: req.body.phone
+    email: req.body.email,
+    ph: req.body.ph
   };
 
-  contacts = contacts.filter(ele => ele.id != req.params.id);
+  contacts = contacts.filter(ele => ele.id != id);
   contacts.push(newContact);
   res.json(newContact);
 });
