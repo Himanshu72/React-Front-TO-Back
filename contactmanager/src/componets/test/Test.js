@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 
 class Test extends Component {
-  componentDidMount() {
-    fetch("http://localhost:8000/get/contacts")
-      .then(response => response.json())
-      .then(json => console.log(json));
-  }
+  componentDidMount() {}
 
   // componentWillMount() {
   //   console.log("Component Will mount");

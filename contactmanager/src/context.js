@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 const Context = React.createContext();
 const reducer = (state, action) => {
   switch (action.type) {
@@ -19,29 +20,17 @@ const reducer = (state, action) => {
   }
 };
 export class Provider extends Component {
+  componentDidMount() {
+    axios
+      .get("http://localhost:8000/get/contacts")
+      .then(res => this.setState({ contacts: res.data }));
+  }
+
   state = {
-    contacts: [
-      {
-        id: 1,
-        name: "Himanshu Joshi",
-        email: "hjoshi115@gmail.com",
-        ph: "767688008"
-      },
-      {
-        id: 2,
-        name: "Himan Joshi",
-        email: "hjoshi115@gmail.com",
-        ph: "767688008"
-      },
-      {
-        id: 3,
-        name: "H Joshi",
-        email: "hjoshi115@gmail.com",
-        ph: "767688008"
-      }
-    ],
+    contacts: [],
     dispatch: action => this.setState(state => reducer(state, action))
   };
+
   render() {
     return (
       <Context.Provider value={this.state}>
