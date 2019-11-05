@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+const uuid = require("uuid");
 const port = 8000;
 class Contact {
   constructor(id, name, email, phone) {
@@ -31,19 +32,31 @@ let contacts = [
   new Contact(2, "Dhiraj Joshi", "hjoshi", "1234556")
 ];
 app.get("/get/contacts", (req, res) => res.json(contacts));
-app.get("/get/contact/:id", (req, res) =>
-  res.json(contacts.filter(ele => ele.id == req.params.id))
-);
+app.get("/get/contact/:id", (req, res) => {
+  const id = Buffer.from(req.params.id, "base64").toString("ascii");
+
+  let data;
+
+  for (let con of contacts) {
+    if (con.id == id) {
+      data = con;
+      break;
+    }
+  }
+  if (!data) {
+    data = { opt: false };
+  }
+  res.json(data);
+});
 app.post("/add/contact", (req, res) => {
-  contacts.push(
-    new Contact(req.body.id, req.body.name, req.body.email, req.body.phone)
+  const newContact = new Contact(
+    uuid(),
+    req.body.name,
+    req.body.email,
+    req.body.ph
   );
-  res.json({
-    id: req.body.id,
-    name: req.body.name,
-    email: req.body.email,
-    phone: req.body.phone
-  });
+  contacts.push(newContact);
+  res.json(newContact);
 });
 
 app.delete("/delete/contact/:id", (req, res) => {

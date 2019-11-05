@@ -3,14 +3,24 @@ import { Consumer } from "../../context";
 
 import TextInputGroup from "../layout/TextInputGroup";
 import axios from "axios";
-class AddContact extends Component {
+class EditContact extends Component {
   state = {
     name: "",
     email: "",
     phone: "",
     errors: {}
   };
+  async componentDidMount() {
+    const id = this.props.match.params.id;
+    const encodeID = Buffer.from(id).toString("base64");
+    const res = await axios.get(
+      `http://localhost:8000/get/contact/ ${encodeID}`
+    );
+    console.log(res.data);
+    const { name, email, ph } = res.data;
 
+    this.setState({ name: name, email: email, phone: ph });
+  }
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -34,16 +44,6 @@ class AddContact extends Component {
       return;
     }
 
-    const newContact = {
-      name: name,
-      email: email,
-      ph: phone
-    };
-
-    axios
-      .post("http://localhost:8000/add/contact", newContact)
-      .then(res => dispatch({ type: "ADD_CONTACT", payload: res.data }));
-
     //clear state
     this.setState({ name: "", email: "", phone: "", errors: {} });
     this.props.history.push("/");
@@ -56,7 +56,7 @@ class AddContact extends Component {
           const { dispatch } = value;
           return (
             <div className="card mb-3">
-              <div className="card-header">Add Contact</div>
+              <div className="card-header">Edit Contact</div>
               <div className="card-body">
                 <form onSubmit={this.onSubmit.bind(this, dispatch)}>
                   <TextInputGroup
@@ -85,7 +85,11 @@ class AddContact extends Component {
                     errors={errors.phone}
                   />
 
-                  <input type="submit" className="btn btn-light btn-block" />
+                  <input
+                    type="submit"
+                    value="Update Contact"
+                    className="btn btn-light btn-block"
+                  />
                 </form>
               </div>
             </div>
@@ -96,4 +100,4 @@ class AddContact extends Component {
   }
 }
 
-export default AddContact;
+export default EditContact;
